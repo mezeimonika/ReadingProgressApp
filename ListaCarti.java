@@ -3,11 +3,16 @@ import java.util.Scanner;
 public class ListaCarti {
     Carte[] lista;
     private int nr;
+    int i;
     public ListaCarti()
     {
         lista=new Carte[100];
         nr=0;
     }
+    public int getNrCarti() {
+        return nr;
+    }
+
     public void adaugaCarte(Carte carte)
     {
         Scanner scanner = new Scanner(System.in);
@@ -20,22 +25,34 @@ public class ListaCarti {
             nr++;
         }
     }
-    public void alegeCarte()
+    public int alegeCarte()
     {
         Scanner scanner = new Scanner(System.in);
-        int i = scanner.nextInt();
+        i = scanner.nextInt();
         System.out.println("Cartea aleasă: "+ lista[i-1]);
-
+        return i;
     }
-    public void adaugaLog()
+    public void adaugaLog(int j)
     {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Număr de ore: ");
-
+        System.out.println("Număr de minute: ");
+        Carte carte=lista[j-1];
+        int minute=scanner.nextInt();
+        Log log = new Log(minute); // Creează un nou log
+        carte.adaugaLog(log);
+        System.out.println("Log adăugat pentru: " + carte);
+    }
+    public void afiseazaLog(int j)
+    {
+        if(j>0 && j<=nr)
+        {
+            Carte carte=lista[j-1];
+            carte.afiseazaLoguri();
+        }
     }
     public void display()
     {
-        for(int i=0; i<nr; i++)
+        for(i=0; i<nr; i++)
             System.out.println(i+1+"."+lista[i]);
     }
 }

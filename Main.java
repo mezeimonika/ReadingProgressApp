@@ -10,7 +10,7 @@ public class Main
         listaCarti=new ListaCarti();
 
         do {
-            System.out.println("\n0.Ieșire din program.\n1.Adaugă o carte.\n2.Lista ta de cărți.\n3.Adaugă un log.\n4.Șterge o carte.\n5.Șterge un log.");
+            System.out.println("\n0.Ieșire din program.\n1.Adaugă o carte.\n2.Lista ta de cărți.\n3.Adaugă un log.\n4.Detalii carte.\n5.Șterge o carte.\n6.Șterge un log.");
             Scanner scanner=new Scanner(System.in);
             meniu=scanner.nextInt();
             switch (meniu) {
@@ -35,7 +35,15 @@ public class Main
                 case 3: {
                     System.out.println("Alege cartea din listă: ");
                     listaCarti.display();
-                    listaCarti.alegeCarte();
+                    int carteAleasa = listaCarti.alegeCarte();
+                    listaCarti.adaugaLog(carteAleasa);
+                    break;
+                }
+                case 4: {
+                    System.out.println("Alege cartea din listă pentru a vedea logurile: ");
+                    listaCarti.display();
+                    int carteAleasa = listaCarti.alegeCarte();
+                    listaCarti.afiseazaLog(carteAleasa);
                     break;
                 }
             }

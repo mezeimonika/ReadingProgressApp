@@ -2,10 +2,12 @@ public class Carte
 {
     private String autor;
     private String titlu;
-    private int ore;
+    Log[] loguri;
+    int nr;
     public Carte()
     {
-        ore=0;
+        loguri=new Log[300];
+        nr=0;
     }
     public String getAutor()
     {
@@ -27,20 +29,28 @@ public class Carte
        if(titlu!=null)
         this.titlu = titlu;
     }
-    public void setOre(int ore)
-    {
-        if(ore!=0)
-            this.ore=ore;
-    }
 
-    public int getOre() {
-        return ore;
-    }
-
-    public String toString()
+    public void adaugaLog(Log log)
     {
-        if(ore!=0)
-        return getTitlu()+ " de "+ getAutor()+" timp citit" +getOre();
+        loguri[nr]=log;
+        nr++;
+    }
+    public void afiseazaLoguri()
+    {
+        if(loguri==null)
+            System.out.println("Nu există loguri pentru această carte.");
+        else
+        {
+            System.out.println("Loguri pentru " + titlu + ": ");
+            for(int i=0; i<nr; i++)
+                System.out.println("Logul numarul "+i +": "+loguri[i]);
+        }
+
+    }
+    public String toString() {
+
+            return getTitlu() + " de " + getAutor();
+
     }
 
 }
