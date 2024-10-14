@@ -1,52 +1,106 @@
-import java.util.Scanner;
+import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-public class Main
-{
-    static ListaCarti listaCarti;
-    static Carte carte;
-    private static int meniu;
-    public static void main(String[] args)
-    {
-        listaCarti=new ListaCarti();
+public class Main extends Application {
+    private ListaCarti listaCarti;
+    private ObservableList<String> bookList;
+    private ListView<String> listView;
+    @Override
+    public void start(Stage primaryStage) {
+        listaCarti = new ListaCarti();
+        bookList = FXCollections.observableArrayList();
+        primaryStage.setTitle("My library");
 
-        do {
-            System.out.println("\n0.Ieșire din program.\n1.Adaugă o carte.\n2.Lista ta de cărți.\n3.Adaugă un log.\n4.Detalii carte.\n5.Șterge o carte.\n6.Șterge un log.");
-            Scanner scanner=new Scanner(System.in);
-            meniu=scanner.nextInt();
-            switch (meniu) {
-                case 0: {
-                    break;
-                }
-                case 1: {
-                    Scanner scanner1=new Scanner(System.in);
-                    System.out.println("Câte cărți adaugi?");
-                    int j=scanner1.nextInt();
-                            for(int i=0; i<j; i++)
-                            {
-                                carte=new Carte();
-                                listaCarti.adaugaCarte(carte);
-                            }
-                    break;
-                }
-                case 2: {
-                    listaCarti.display();
-                    break;
-                }
-                case 3: {
-                    System.out.println("Alege cartea din listă: ");
-                    listaCarti.display();
-                    int carteAleasa = listaCarti.alegeCarte();
-                    listaCarti.adaugaLog(carteAleasa);
-                    break;
-                }
-                case 4: {
-                    System.out.println("Alege cartea din listă pentru a vedea logurile: ");
-                    listaCarti.display();
-                    int carteAleasa = listaCarti.alegeCarte();
-                    listaCarti.afiseazaLog(carteAleasa);
-                    break;
+        listView = new ListView<>();
+        listView.setItems(bookList);
+
+        listView.setOnMouseClicked(event -> {
+            String selectedBook = listView.getSelectionModel().getSelectedItem();
+            if (selectedBook != null) {
+                Carte selectedCarte = findCarte(selectedBook);;
+                if (selectedCarte != null) {
+                    new BookDetailsView(selectedCarte, primaryStage, listaCarti, bookList);
                 }
             }
-        }while(meniu!=0);
+        });
+
+        Button addBtn = new Button("Add");
+
+        addBtn.setOnAction(e -> addBookField(primaryStage));
+
+        VBox layout = new VBox(20);
+        layout.getChildren().addAll(
+                new Label("List of Books:"), listView,
+                addBtn
+        );
+        Scene scene = new Scene(layout, 400, 400);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private void addBookField(Stage primaryStage)
+    {
+        TextField titleField = new TextField();
+        titleField.setPromptText("Enter book title");
+        TextField authorField = new TextField();
+        authorField.setPromptText("Enter book author");
+        Button addBtn1 = new Button("Add");
+        addBtn1.setOnAction(e -> {
+            Carte carte = new Carte();
+            String titlu = titleField.getText();
+            String autor = authorField.getText();
+
+            if (titlu.isEmpty() || autor.isEmpty()) {
+                System.out.println("Please enter both title and author.");
+                return;
+            }
+            carte.setTitlu(titlu);
+            carte.setAutor(autor);
+            listaCarti.adaugaCarte(carte);
+            bookList.add(carte.toString());
+            titleField.clear();
+            authorField.clear();
+            primaryStage.getScene().setRoot(createMainLayout());
+        });
+
+        VBox inputLayout = new VBox(10);
+        inputLayout.getChildren().addAll(
+                new Label("Book Title:"), titleField,
+                new Label("Book Author:"), authorField,
+                addBtn1
+        );
+        primaryStage.getScene().setRoot(inputLayout);
+    }
+
+    private VBox createMainLayout() {
+        listView.setItems(bookList);
+
+        Button addButton = new Button("Add");
+        addButton.setOnAction(e -> {
+              addBookField((Stage) addButton.getScene().getWindow());
+        });
+
+        return new VBox(20, new Label("List of Books:"), listView, addButton);
+    }
+
+    private Carte findCarte(String title) {
+        for (Carte carte : listaCarti.lista) {
+            if (carte.toString().equals(title)) {
+                return carte;
+            }
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

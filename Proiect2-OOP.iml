@@ -7,5 +7,14 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="lib" level="project" />
+    <orderEntry type="library" exported="" name="javafx-swt" level="project" />
+    <orderEntry type="library" exported="" name="javafx.base" level="project" />
+    <orderEntry type="library" exported="" name="javafx.controls" level="project" />
+    <orderEntry type="library" exported="" name="javafx.fxml" level="project" />
+    <orderEntry type="library" exported="" name="javafx.graphics" level="project" />
+    <orderEntry type="library" exported="" name="javafx.media" level="project" />
+    <orderEntry type="library" exported="" name="javafx.swing" level="project" />
+    <orderEntry type="library" exported="" name="javafx.web" level="project" />
   </component>
 </module>

@@ -1,13 +1,15 @@
+import java.util.ArrayList;
+
 public class Carte
 {
     private String autor;
     private String titlu;
-    Log[] loguri;
-    int nr;
+    private double rating;
+    private ArrayList<Log> loguri;
     public Carte()
     {
-        loguri=new Log[300];
-        nr=0;
+        loguri = new ArrayList<>();
+        rating=0.0;
     }
     public String getAutor()
     {
@@ -29,27 +31,31 @@ public class Carte
        if(titlu!=null)
         this.titlu = titlu;
     }
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
 
     public void adaugaLog(Log log)
     {
-        loguri[nr]=log;
-        nr++;
+        loguri.add(log);
     }
-    public void afiseazaLoguri()
-    {
-        if(loguri==null)
-            System.out.println("Nu există loguri pentru această carte.");
-        else
-        {
-            System.out.println("Loguri pentru " + titlu + ": ");
-            for(int i=0; i<nr; i++)
-                System.out.println("Logul numarul "+i +": "+loguri[i]);
+    public ArrayList<Log> afiseazaLoguri() {
+        return loguri;
+    }
+    public void deleteLastLog() {
+        if (!loguri.isEmpty()) {
+            loguri.remove(loguri.size() - 1);
+        } else {
+            System.out.println("No logs to delete.");
         }
-
     }
     public String toString() {
 
-            return getTitlu() + " de " + getAutor();
+            return getTitlu() + " by " + getAutor();
 
     }
 

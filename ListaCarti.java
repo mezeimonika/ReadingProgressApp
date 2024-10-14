@@ -15,15 +15,23 @@ public class ListaCarti {
 
     public void adaugaCarte(Carte carte)
     {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Titlul cărții: ");
-        carte.setTitlu(scanner.nextLine());
-        System.out.print("Autorul cărții: ");
-        carte.setAutor(scanner.nextLine());
-        if (nr < 100) {
+        if (nr < lista.length) {
             lista[nr] = carte;
             nr++;
         }
+    }
+    public void removeCarte(Carte carte) {
+        for (i = 0; i <nr; i++) {
+            if (lista[i] == carte) {
+                for (int j=i; j <nr-1; j++) {
+                    lista[j] = lista[j + 1];
+                }
+                lista[nr-1] = null;
+                nr--;
+                return;
+            }
+        }
+        System.out.println("Book not found in the list.");
     }
     public int alegeCarte()
     {
@@ -54,5 +62,12 @@ public class ListaCarti {
     {
         for(i=0; i<nr; i++)
             System.out.println(i+1+"."+lista[i]);
+    }
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < nr; i++) {
+            sb.append(i + 1).append(". ").append(lista[i].toString()).append("\n");
+        }
+        return sb.toString();
     }
 }
