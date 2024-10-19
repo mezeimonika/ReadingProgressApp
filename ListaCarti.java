@@ -20,6 +20,7 @@ public class ListaCarti {
             nr++;
         }
     }
+
     public void removeCarte(Carte carte) {
         for (i = 0; i <nr; i++) {
             if (lista[i] == carte) {
@@ -33,36 +34,17 @@ public class ListaCarti {
         }
         System.out.println("Book not found in the list.");
     }
-    public int alegeCarte()
-    {
-        Scanner scanner = new Scanner(System.in);
-        i = scanner.nextInt();
-        System.out.println("Cartea aleasă: "+ lista[i-1]);
-        return i;
-    }
-    public void adaugaLog(int j)
-    {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Număr de minute: ");
-        Carte carte=lista[j-1];
-        int minute=scanner.nextInt();
-        Log log = new Log(minute); // Creează un nou log
-        carte.adaugaLog(log);
-        System.out.println("Log adăugat pentru: " + carte);
-    }
-    public void afiseazaLog(int j)
-    {
-        if(j>0 && j<=nr)
-        {
-            Carte carte=lista[j-1];
-            carte.afiseazaLoguri();
+    public Carte findCarte(String selectedBook) {
+        for (int i = 0; i < nr; i++) {
+            Carte carte = lista[i];
+            if (carte != null && carte.toString().equals(selectedBook)) {
+                return carte;
+            }
         }
+        System.out.println("Book not found: " + selectedBook);
+        return null;
     }
-    public void display()
-    {
-        for(i=0; i<nr; i++)
-            System.out.println(i+1+"."+lista[i]);
-    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < nr; i++) {

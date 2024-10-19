@@ -4,12 +4,16 @@ public class Carte
 {
     private String autor;
     private String titlu;
-    private double rating;
+    private String rating;
     private ArrayList<Log> loguri;
+    private String shelf;
+    private int pagini;
     public Carte()
     {
         loguri = new ArrayList<>();
-        rating=0.0;
+        rating="";
+        shelf="";
+        pagini=0;
     }
     public String getAutor()
     {
@@ -31,14 +35,32 @@ public class Carte
        if(titlu!=null)
         this.titlu = titlu;
     }
-    public double getRating() {
+    public void setPagini(int pagini)
+    {
+        if(pagini!=0)
+            this.pagini=pagini;
+    }
+
+    public int getPagini() {
+        return pagini;
+    }
+
+    public String getRating() {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(String rating) {
         this.rating = rating;
     }
 
+    public void setShelf(String shelf) {
+        this.shelf=shelf;
+    }
+
+    public String getShelf()
+    {
+        return shelf;
+    }
     public void adaugaLog(Log log)
     {
         loguri.add(log);
@@ -54,9 +76,11 @@ public class Carte
         }
     }
     public String toString() {
-
+if(rating==null)
             return getTitlu() + " by " + getAutor();
+else return getTitlu() + " by " + getAutor()+ " "+getRating();
 
     }
+
 
 }
