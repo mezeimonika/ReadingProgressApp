@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ListView fx:id="listView" cache="true" focusTraversable="false" layoutY="1.0" prefHeight="400.0" prefWidth="600.0" style="-fx-border-color: #7C7E73; -fx-border-radius: 20; -fx-background-radius: 20; -fx-background-color: #F6F4F0; -fx-border-width: 2;" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="70.0">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets></ListView>
+      <Button fx:id="addBtn" graphicTextGap="2.0" layoutX="542.0" layoutY="31.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="28.0" style="-fx-background-color: #7C7E73; -fx-background-radius: 20;" text="+" textFill="WHITE">
+         <font>
+            <Font size="13.0" />
+         </font></Button>
+      <ButtonBar layoutX="30.0" layoutY="25.0" prefHeight="40.0" prefWidth="375.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="25.0">
+        <buttons>
+            <TextField fx:id="inputSearch" minWidth="0.0" prefHeight="25.0" promptText="Search..." style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: #7C7E73;" />
+            <ChoiceBox fx:id="filterChoiceBox" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: #7C7E73; -fx-background-radius: 20;">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </ChoiceBox>
+          <Button fx:id="filterBtn" minWidth="12.0" mnemonicParsing="false" prefHeight="25.0" style="-fx-background-color: #7C7E73; -fx-background-radius: 20;" text="Filter" textFill="WHITE" />
+        </buttons>
+      </ButtonBar>
+   </children>
+</AnchorPane>

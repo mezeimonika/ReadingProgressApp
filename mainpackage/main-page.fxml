@@ -20,7 +20,7 @@
          <font>
             <Font size="13.0" />
          </font></Button>
-      <ButtonBar layoutX="30.0" layoutY="25.0" prefHeight="40.0" prefWidth="375.0" AnchorPane.leftAnchor="10.0">
+      <ButtonBar layoutX="30.0" layoutY="25.0" prefHeight="40.0" prefWidth="375.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="25.0">
         <buttons>
             <TextField fx:id="inputSearch" minWidth="0.0" prefHeight="25.0" promptText="Search..." style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: #7C7E73;" />
             <ChoiceBox fx:id="filterChoiceBox" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: #7C7E73; -fx-background-radius: 20;">
@@ -31,10 +31,5 @@
           <Button fx:id="filterBtn" minWidth="12.0" mnemonicParsing="false" prefHeight="25.0" style="-fx-background-color: #7C7E73; -fx-background-radius: 20;" text="Filter" textFill="WHITE" />
         </buttons>
       </ButtonBar>
-      <Button fx:id="sortButton" graphicTextGap="2.0" layoutX="507.0" layoutY="31.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="28.0" style="-fx-background-color: #7C7E73; -fx-background-radius: 20;" text="^" textFill="WHITE">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Button>
    </children>
 </AnchorPane>

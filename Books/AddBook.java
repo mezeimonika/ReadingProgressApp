@@ -1,3 +1,4 @@
+package Books;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,7 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
+import mainpackage.Main;
 import java.io.IOException;
 
 public class AddBook {
@@ -17,13 +18,12 @@ public class AddBook {
     TextField titleField, authorField, nrPages;
     @FXML
     ChoiceBox<String> shelfChoiceBox;
+ListaCarti listaCarti;
+    public Main mainController;
 
-    private Main mainController=new Main();
-    private ListaCarti listaCarti;
-
-    public AddBook( ListaCarti listaCarti, Main mainController) {
-        this.listaCarti = listaCarti;
+    public AddBook(ListaCarti listaCarti, Main mainController) {
         this.mainController = mainController;
+        this.listaCarti=listaCarti;
     }
 
     public void addBookField(Stage primaryStage) throws IOException {
@@ -35,23 +35,28 @@ public class AddBook {
         shelfChoiceBox.getSelectionModel().selectFirst();
 
         addBtn1.setOnAction(e -> {
-            Carte carte = new Carte();
+
             String titlu = titleField.getText();
             String autor = authorField.getText();
             String shelf = shelfChoiceBox.getValue();
-            String pagini= nrPages.getText();
-            if (titlu.isEmpty() || autor.isEmpty() || shelf==null || pagini.isEmpty()) {
+            String pagini = nrPages.getText();
+            if (titlu.isEmpty() || autor.isEmpty() || shelf == null || pagini.isEmpty()) {
                 System.out.println("Please enter all fields.");
                 return;
             }
+            Carte carte=new Carte();
+            try {
+                int nrPagini = Integer.parseInt(pagini);
+                carte.setPagini(nrPagini);
+            } catch (NumberFormatException ex) {
+                System.out.println("Invalid number format for pages.");
+                return;
+            }
+
 
             carte.setTitlu(titlu);
             carte.setAutor(autor);
             carte.setShelf(shelf);
-            carte.setPagini(Integer.parseInt(pagini));
-
-            listaCarti.adaugaCarte(carte);
-
             mainController.addBookToList(carte);
 
             titleField.clear();

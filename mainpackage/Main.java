@@ -1,3 +1,9 @@
+package mainpackage;
+
+import Books.AddBook;
+import Books.BookDetailsView;
+import Books.Carte;
+import Books.ListaCarti;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,12 +17,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class Main extends Application {
     @FXML
-    private Button addBtn, backBtn, filterBtn, sortButton;
+    private Button addBtn, backBtn, filterBtn;
     @FXML
     ListView<String> listView;
     @FXML
@@ -24,30 +28,28 @@ public class Main extends Application {
     @FXML
     private TextField inputSearch;
 
-    private ListaCarti listaCarti;
+    public ListaCarti listaCarti;
     public ObservableList<String> bookList;
-    private ObservableList<Carte> allBooks;
+    private static final Carte[] allBooks = new Carte[1000];
+    private static int bookCount = 0;
     AddBook addBook;
     private Stage primaryStage;
-    private boolean isSortedAscending = true;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
 
         this.primaryStage=primaryStage;
         bookList=FXCollections.observableArrayList();
-        allBooks = FXCollections.observableArrayList();
+        listaCarti = new ListaCarti();
         createMainLayout(primaryStage);
         primaryStage.show();
     }
 
-    public Parent createMainLayout(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("main-page.fxml"));
+    public void createMainLayout(Stage primaryStage) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/mainpackage/main-page.fxml"));
         loader.setController(this);
         Parent root = loader.load();
 
-        listaCarti = new ListaCarti();
-        listView.setItems(bookList);
         listView.setStyle("-fx-font-size: 14px; -fx-border-color:  #7C7E73; -fx-border-width:2; -fx-background-color: #F6F4F0;");
 
         addBook = new AddBook(listaCarti,this);
@@ -63,12 +65,6 @@ public class Main extends Application {
         });
         filterBtn.setOnAction(e -> filterBooksBySearch());
 
-        sortButton.setOnAction(e->
-        {
-            sortBooks();
-            rotateButton();
-        });
-
         addBtn.setOnAction(e -> {
             try {
                 addBook.addBookField(primaryStage);
@@ -76,10 +72,23 @@ public class Main extends Application {
                 throw new RuntimeException(ex);
             }
         });
-
+        listView.setItems(bookList);
+        listView.setOnMouseClicked(event -> {
+            String selectedBook = listView.getSelectionModel().getSelectedItem();
+            if (selectedBook != null) {
+                Carte selectedCarte = listaCarti.findCarte(selectedBook);
+                if (selectedCarte != null) {
+                    BookDetailsView bookDetailsView = new BookDetailsView(listaCarti, selectedCarte, bookList, listView, this);
+                    try {
+                        bookDetailsView.showDetails(primaryStage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
-        return root;
     }
 
     private void updateListView(ObservableList<String> books) {
@@ -91,10 +100,12 @@ public class Main extends Application {
 
         String normalizedQuery = searchQuery.toLowerCase();
 
-        for (Carte carte : allBooks) {
+
+        for (int i = 0; i < bookCount; i++) {
+            Carte carte = allBooks[i];
             boolean matchesSearch = carte.getTitlu().toLowerCase().contains(normalizedQuery) || carte.getAutor().toLowerCase().contains(normalizedQuery);
 
-           if ("All".equals(selectedShelf)) {
+            if ("All".equals(selectedShelf)) {
                 if (matchesSearch) {
                     filteredList.add(carte.toString());
                 }
@@ -110,29 +121,27 @@ public class Main extends Application {
         filterBooksBySearch(inputSearch.getText());
     }
 
-    private void sortBooks() {
-        if (isSortedAscending) {
-            Collections.sort(allBooks, Comparator.comparingInt(Carte::getPagini));
-        } else {
-            Collections.sort(allBooks, Comparator.comparingInt(Carte::getPagini).reversed());
+    public void updateBookInList(Carte updatedBook) {
+        for (int i = 0; i < bookCount; i++) {
+            if (allBooks[i].getTitlu().equals(updatedBook.getTitlu())) {
+                allBooks[i] = updatedBook;
+                break;
+            }
         }
-        updateBookList();
-        isSortedAscending = !isSortedAscending;
-    }
-    private void updateBookList() {
         bookList.clear();
-        for (Carte carte : allBooks) {
-            bookList.add(carte.toString());
+        for (int i = 0; i < bookCount; i++) {
+            bookList.add(allBooks[i].toString());
         }
+
         listView.setItems(bookList);
     }
 
-    private void rotateButton() {
-        sortButton.setRotate(sortButton.getRotate() + 180);
-    }
-
     public void addBookToList(Carte carte) {
-        allBooks.add(carte);
+        if (carte != null && bookCount < allBooks.length) {
+            allBooks[bookCount] = carte;
+            bookCount++;
+        }
+        listaCarti.adaugaCarte(carte);
         bookList.add(carte.toString());
     }
 
