@@ -1,15 +1,26 @@
 package Books;
 
+import java.time.LocalDate;
+
 public class Log {
     private int minute;
     private int ore;
     private int secunde;
     private int pagini;
-    public Log(int minute, int ore, int secunde, int pagini) {
+    private LocalDate date;
+    public Log(int minute, int ore, int secunde, int pagini, LocalDate date) {
         this.minute = minute;
         this.ore=ore;
         this.secunde=secunde;
         this.pagini=pagini;
+        this.date=date;
+    }
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public int getPagini() {

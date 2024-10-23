@@ -1,0 +1,13 @@
+.radio-button .radio {
+    -fx-opacity: 0;
+}
+.radio-button {
+    -fx-shape: "M50,1 L61,35 H98 L67,57 L78,91 L50,70 L22,91 L33,57 L2,35 H39 Z";
+    -fx-font-size: 15px;
+    -fx-background-color: #F6F4F0;
+    -fx-height: 15px;
+}
+.radio-button:selected {
+    -fx-background-color:  #4c5248;
+    -fx-border-color: #F6F4F0;
+}

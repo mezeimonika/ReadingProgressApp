@@ -1,4 +1,5 @@
 package Books;
+import javafx.scene.layout.VBox;
 import mainpackage.Main;
 import dialogues.AddLogDialog;
 import dialogues.ReviewDialog;
@@ -20,7 +21,7 @@ public class BookDetailsView {
     @FXML
     private TextField titleField, authorField;
     @FXML
-    private Label titleLabel, authorLabel, shelfLabel, pagesLabel, timeRead, percent;
+    private Label titleLabel, authorLabel, shelfLabel, pagesLabel, timeRead, percent, reviewLabel, ratingLabel;
     @FXML
     private Button backBtn, startReading, addLogBtn, finishedBtn;
     @FXML
@@ -31,6 +32,8 @@ public class BookDetailsView {
     private TableColumn<Log, String> timeColumn;
     @FXML
     private TableColumn<Log, Integer> pageColumn;
+    @FXML
+    private VBox reviewVBox;
 
     private ObservableList<String> bookList;
     private Carte selectedBook;
@@ -51,7 +54,7 @@ public class BookDetailsView {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/Books/book-details.fxml"));
         loader.setController(this);
         Parent root = loader.load();
-
+        reviewVBox.setVisible(false);
         titleLabel.setText(selectedBook.getTitlu());
         authorLabel.setText(selectedBook.getAutor());
         shelfLabel.setText("("+selectedBook.getShelf()+")");
@@ -103,30 +106,48 @@ public class BookDetailsView {
     private String getTotalReadingTime(Carte selectedBook) {
         int totalMinutes = 0;
         int totalHours=0;
+        int totalSeconds=0;
         for (Log log : selectedBook.afiseazaLoguri()) {
             totalMinutes += log.getMinute();
             totalHours+=log.getOre();
+            totalSeconds+=log.getSecunde();
         }
 
-        if (totalHours==0)
-            return totalMinutes + "m";
-        else
-            if(totalMinutes==0)
-                return totalHours+"h ";
-            else if(totalMinutes>0 && totalHours>0)
-            {
-                if(totalMinutes>60)
+        if (totalSeconds >= 60) {
+            totalMinutes += totalSeconds / 60;
+            totalSeconds = totalSeconds % 60;
+        }
+
+        if (totalMinutes >= 60) {
+            totalHours += totalMinutes / 60;
+            totalMinutes = totalMinutes % 60;
+        }
+
+        if (totalHours == 0) {
+            if (totalMinutes == 0) {
+                if(totalSeconds==0)
                 {
-                    int remaining=totalMinutes%60;
-                    totalHours+=totalMinutes/60;
-                    return totalHours+"h "+remaining+"m";
+                    return "00h 00m 00s";
                 }
-                else return totalHours+"h "+totalMinutes+"m";
+                else return totalSeconds + "s";
             }
+            else return totalMinutes + "m " + totalSeconds + "s";
+        }else if (totalMinutes == 0) {
+            if(totalSeconds==0)
+            {
+                return totalHours + "h ";
+            }
+            else return totalHours+"h "+totalSeconds+"s";
+        }else if(totalSeconds==0)
+        {
+            return totalHours+"h "+totalMinutes+"m";
+        }
+        else {
+            return totalHours+"h "+totalMinutes+"m "+totalSeconds+"s";
+        }
 
-
-        return "00h 00m";
     }
+
     private void setupLogTable() {
         ObservableList<Log> logs = FXCollections.observableArrayList(selectedBook.afiseazaLoguri());
         logTable.setItems(logs);
@@ -163,6 +184,7 @@ public class BookDetailsView {
         ObservableList<Log> logs = FXCollections.observableArrayList(selectedBook.afiseazaLoguri());
         logTable.setItems(logs);
 
+        updateReviewAndRating(selectedBook.getReview(), selectedBook.getRating());
         mainController.updateBookInList(selectedBook);
     }
 
@@ -207,13 +229,47 @@ public class BookDetailsView {
         loader.setController(reviewDialog);
 
         Parent root = loader.load();
+
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getResource("/Books/stars.css").toExternalForm());
+
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Submit Review");
 
-        dialogStage.setScene(new Scene(root));
+        dialogStage.setScene(scene);
         dialogStage.initOwner(primaryStage);
         dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.setOnHidden(e -> {
+           if (reviewDialog.getReview() != null && reviewDialog.getRating() != null) {
+                updateReviewAndRating(reviewDialog.getReview(), reviewDialog.getRating());
+            }
+        });
         dialogStage.showAndWait();
     }
+    public void updateReviewAndRating(String review, String rating) {
+        reviewLabel.setText(review);
+        int ratingValue;
+        try {
+            ratingValue = Integer.parseInt(rating);
+        } catch (NumberFormatException e) {
+            ratingValue = 0;
+        }
+        StringBuilder stars = new StringBuilder();
+        for (int i = 0; i < 5; i++) {
+            if (i < ratingValue) {
+                stars.append("★");
+            } else {
+                stars.append("☆");
+            }
+        }
+        ratingLabel.setText("Rating: " + stars.toString());
+        reviewVBox.setVisible(true);
+        pagesLabel.setVisible(false);
+        timeRead.setVisible(false);
+        startReading.setVisible(false);
+        addLogBtn.setVisible(false);
+        finishedBtn.setVisible(false);
+    }
+
 
 }

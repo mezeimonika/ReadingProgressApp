@@ -3,7 +3,10 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
+import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import Books.BookDetailsView;
@@ -85,7 +88,20 @@ public class TimerDialog {
     private void stopTimer() {
         if (running) {
             timer.cancel();
-            saveElapsedTime();
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Pages Read");
+            dialog.setHeaderText("How many pages did you read?");
+            dialog.setContentText("Please enter the number of pages:");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(pagesStr -> {
+                try {
+                    int pages = Integer.parseInt(pagesStr);
+                    saveElapsedTime(pages);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid number of pages entered.");
+                }
+            });
             bookDetailsView.updateBookDetails();
             closeDialog();
         }
@@ -101,15 +117,16 @@ public class TimerDialog {
         timeLabel.setText(timeText);
     }
 
-    private void saveElapsedTime() {
+    private void saveElapsedTime(int pages) {
         int seconds = (int) ((elapsedTime / 1000) % 60);
         int minutes = (int) ((elapsedTime / (1000 * 60)) % 60);
         int hours = (int) (elapsedTime / (1000 * 3600));
-        Log logEntry = new Log(minutes, hours, seconds, 0);
+        LocalDate date = LocalDate.now();
+        Log logEntry = new Log(minutes, hours, seconds, pages, date);
 
         selectedBook.adaugaLog(logEntry);
+        selectedBook.setPaginiCitite(pages);
         bookDetailsView.updateBookDetails();
-        System.out.println("Books.Log Saved: " + logEntry.getFormattedTime());
     }
 
     public void closeDialog() {

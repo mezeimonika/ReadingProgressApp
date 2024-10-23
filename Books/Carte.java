@@ -1,5 +1,6 @@
 package Books;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Carte
@@ -30,6 +31,14 @@ public class Carte
 
     public String getTitlu() {
         return titlu;
+    }
+
+    public ArrayList<Log> getLoguri() {
+        return loguri;
+    }
+
+    public void setLoguri(ArrayList<Log> loguri) {
+        this.loguri = loguri;
     }
 
     public void setAutor(String autor)

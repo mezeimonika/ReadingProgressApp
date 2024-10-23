@@ -29,7 +29,7 @@ ListaCarti listaCarti;
     public void addBookField(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("add-book.fxml"));
         loader.setController(this);
-        Parent root1 = loader.load();
+        Parent root = loader.load();
 
         shelfChoiceBox.setItems(FXCollections.observableArrayList("Want to Read", "Currently Reading", "Read"));
         shelfChoiceBox.getSelectionModel().selectFirst();
@@ -80,7 +80,7 @@ ListaCarti listaCarti;
             }
         });
 
-        Scene scene = new Scene(root1);
+        Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
