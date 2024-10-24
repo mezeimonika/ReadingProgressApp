@@ -1,28 +1,17 @@
-package Books;
+package sessions;
 
-import java.time.LocalDate;
 
 public class Log {
     private int minute;
     private int ore;
     private int secunde;
     private int pagini;
-    private LocalDate date;
-    public Log(int minute, int ore, int secunde, int pagini, LocalDate date) {
+    public Log(int minute, int ore, int secunde, int pagini) {
         this.minute = minute;
         this.ore=ore;
         this.secunde=secunde;
         this.pagini=pagini;
-        this.date=date;
     }
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
     public int getPagini() {
         return pagini;
     }
@@ -55,7 +44,23 @@ public class Log {
         return minute;
     }
     public String getFormattedTime() {
-        return ore + "h " + minute + "m "+ secunde+"s";
+        if (ore== 0) {
+            if (minute == 0) {
+                return secunde + "s";
+            }
+            else return minute + "m " + secunde + "s";
+        }else if (minute == 0) {
+            if(secunde==0)
+            {
+                return ore + "h ";
+            }
+            else return ore+"h "+secunde+"s";
+        }else if(secunde==0)
+        {
+            return ore+"h "+minute+"m";
+        }
+        else {
+            return ore + "h " + minute + "m "+ secunde+"s";
+        }
     }
-
 }

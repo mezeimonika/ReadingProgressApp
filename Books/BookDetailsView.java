@@ -1,4 +1,6 @@
 package Books;
+import dialogues.EditBookReview;
+import interfaces.Reviewable;
 import javafx.scene.layout.VBox;
 import mainpackage.Main;
 import dialogues.AddLogDialog;
@@ -15,15 +17,16 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sessions.Log;
+
 import java.io.IOException;
+import java.util.Objects;
 
 public class BookDetailsView {
     @FXML
-    private TextField titleField, authorField;
+    private Label titleLabel, authorLabel, shelfLabel, pagesLabel, timeRead, percent, reviewLabel, ratingLabel, predictionLabel;
     @FXML
-    private Label titleLabel, authorLabel, shelfLabel, pagesLabel, timeRead, percent, reviewLabel, ratingLabel;
-    @FXML
-    private Button backBtn, startReading, addLogBtn, finishedBtn;
+    private Button backBtn, startReading, addLogBtn, finishedBtn, editBtn;
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -35,17 +38,13 @@ public class BookDetailsView {
     @FXML
     private VBox reviewVBox;
 
-    private ObservableList<String> bookList;
-    private Carte selectedBook;
-    private Main mainController;
-    private ListView<String> listView;
-    private ListaCarti listaCarti;
+    private final Carte selectedBook;
+    private final Main mainController;
+    private final ListaCarti listaCarti;
+    EditBook editBook;
 
-
-    public BookDetailsView(ListaCarti listaCarti, Carte selectedBook, ObservableList<String> bookList, ListView<String> listView, Main mainController) {
+    public BookDetailsView(ListaCarti listaCarti, Carte selectedBook, Main mainController) {
         this.selectedBook = selectedBook;
-        this.bookList = bookList;
-        this.listView = listView;
         this.mainController = mainController;
         this.listaCarti = listaCarti;
     }
@@ -59,10 +58,7 @@ public class BookDetailsView {
         authorLabel.setText(selectedBook.getAutor());
         shelfLabel.setText("("+selectedBook.getShelf()+")");
 
-        updateBookDetails();
-
-        String paginiTotale= String.valueOf(selectedBook.getPagini());
-        String paginiCitite=String.valueOf(selectedBook.getPaginiCitite());
+        updateBookDetails(selectedBook);
 
         backBtn.setOnAction(e -> {
             try {
@@ -93,7 +89,15 @@ public class BookDetailsView {
                 throw new RuntimeException(e);
             }
         });
-
+        editBook=new EditBook(listaCarti, mainController, selectedBook, this);
+        editBtn.setOnAction(e->
+        {
+            try {
+                editBook.bookField(primaryStage);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         setupLogTable();
 
@@ -101,7 +105,6 @@ public class BookDetailsView {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
 
     private String getTotalReadingTime(Carte selectedBook) {
         int totalMinutes = 0;
@@ -152,15 +155,13 @@ public class BookDetailsView {
         ObservableList<Log> logs = FXCollections.observableArrayList(selectedBook.afiseazaLoguri());
         logTable.setItems(logs);
 
-        timeColumn.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(cellData.getValue().getFormattedTime());
-        });
+        timeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFormattedTime()));
 
         pageColumn.setCellValueFactory(new PropertyValueFactory<>("pagini"));
     }
 
 
-    public void updateBookDetails() {
+    public void updateBookDetails(Carte selectedBook) {
         pagesLabel.setText("Pages read\n" + selectedBook.getPaginiCitite() + "/" + selectedBook.getPagini());
         timeRead.setText("Read time\n" + getTotalReadingTime(selectedBook));
         if (selectedBook.getPaginiCitite() > 0 && selectedBook.getPaginiCitite() < selectedBook.getPagini()) {
@@ -183,13 +184,46 @@ public class BookDetailsView {
 
         ObservableList<Log> logs = FXCollections.observableArrayList(selectedBook.afiseazaLoguri());
         logTable.setItems(logs);
+        if(Objects.equals(selectedBook.getShelf(), "Read"))
+        {
+            updateReviewAndRating(selectedBook.getReview(), selectedBook.getRating());
+            setVisibility();
+        }
+        predictReadingTime(selectedBook);
 
-        updateReviewAndRating(selectedBook.getReview(), selectedBook.getRating());
         mainController.updateBookInList(selectedBook);
+    }
+    private void predictReadingTime(Carte selectedBook) {
+        int totalPages = selectedBook.getPagini();
+        int pagesRead = selectedBook.getPaginiCitite();
+        int pagesLeft = totalPages - pagesRead;
+
+        int totalHours = 0;
+        int totalMinutes = 0;
+        int totalSeconds = 0;
+        for (Log log : selectedBook.afiseazaLoguri()) {
+            totalHours += log.getOre();
+            totalMinutes += log.getMinute();
+            totalSeconds += log.getSecunde();
+        }
+        totalMinutes += totalSeconds / 60;
+        totalSeconds = totalSeconds % 60;
+        totalHours += totalMinutes / 60;
+        totalMinutes = totalMinutes % 60;
+        if (pagesRead > 0 && (totalHours > 0 || totalMinutes > 0)) {
+            int totalTimeInMinutes = (totalHours * 60) + totalMinutes;
+            double readingSpeed = (double) pagesRead / totalTimeInMinutes;
+            int predictedTimeInMinutes = (int) Math.ceil(pagesLeft / readingSpeed);
+            int predictedHours = predictedTimeInMinutes / 60;
+            int predictedMinutes = predictedTimeInMinutes % 60;
+            predictionLabel.setText(String.format("Estimated time to finish: %dh %dm", predictedHours, predictedMinutes));
+        } else {
+            predictionLabel.setText("Not enough data to predict remaining reading time.");
+        }
     }
 
     private void openTimerDialog(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Books/timer.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dialogues/timer.fxml"));
 
         TimerDialog timerDialog = new TimerDialog(selectedBook, this);
         loader.setController(timerDialog);
@@ -206,7 +240,7 @@ public class BookDetailsView {
 
 
     private void showAddLogDialog(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Books/add-log.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dialogues/add-log.fxml"));
 
         AddLogDialog addLog = new AddLogDialog(selectedBook, this);
         loader.setController(addLog);
@@ -223,15 +257,16 @@ public class BookDetailsView {
 
     private void openReviewDialog(Stage primaryStage) throws IOException {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Books/review-dialog.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dialogues/review-dialog.fxml"));
 
-        ReviewDialog reviewDialog=new ReviewDialog(selectedBook, this);
+        Reviewable reviewHandler = new EditBookReview(this, selectedBook);
+        ReviewDialog reviewDialog=new ReviewDialog(selectedBook, reviewHandler);
         loader.setController(reviewDialog);
 
         Parent root = loader.load();
 
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getResource("/Books/stars.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/dialogues/stars.css")).toExternalForm());
 
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Submit Review");
@@ -239,15 +274,10 @@ public class BookDetailsView {
         dialogStage.setScene(scene);
         dialogStage.initOwner(primaryStage);
         dialogStage.initModality(Modality.WINDOW_MODAL);
-        dialogStage.setOnHidden(e -> {
-           if (reviewDialog.getReview() != null && reviewDialog.getRating() != null) {
-                updateReviewAndRating(reviewDialog.getReview(), reviewDialog.getRating());
-            }
-        });
         dialogStage.showAndWait();
     }
     public void updateReviewAndRating(String review, String rating) {
-        reviewLabel.setText(review);
+        reviewLabel.setText(selectedBook.getPaginiCitite()+"/"+ selectedBook.getPagini()+"\n"+review);
         int ratingValue;
         try {
             ratingValue = Integer.parseInt(rating);
@@ -262,13 +292,18 @@ public class BookDetailsView {
                 stars.append("☆");
             }
         }
-        ratingLabel.setText("Rating: " + stars.toString());
+        ratingLabel.setText("Rating: " + stars);
+    }
+    public void setVisibility()
+    {
         reviewVBox.setVisible(true);
+
         pagesLabel.setVisible(false);
         timeRead.setVisible(false);
         startReading.setVisible(false);
         addLogBtn.setVisible(false);
         finishedBtn.setVisible(false);
+        predictionLabel.setVisible(false);
     }
 
 

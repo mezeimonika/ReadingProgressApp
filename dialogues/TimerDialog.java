@@ -5,12 +5,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import Books.BookDetailsView;
-import Books.Log;
+import sessions.Log;
 import Books.Carte;
 
 public class TimerDialog {
@@ -28,7 +27,7 @@ public class TimerDialog {
     private long elapsedTime;
     private boolean running;
     public Carte selectedBook;
-    private BookDetailsView bookDetailsView;
+    private final BookDetailsView bookDetailsView;
 
     public TimerDialog(Carte selectedBook, BookDetailsView bookDetailsView) {
         this.selectedBook=selectedBook;
@@ -42,7 +41,7 @@ public class TimerDialog {
         startStopButton.setOnAction(event -> toggleTimer());
         stopButton.setOnAction(event -> stopTimer());
         resetButton.setOnAction(event -> resetTimer());
-        bookDetailsView.updateBookDetails();
+        bookDetailsView.updateBookDetails(selectedBook);
     }
 
     private void toggleTimer() {
@@ -68,9 +67,7 @@ public class TimerDialog {
                 long minutes = (elapsedTime / (1000 * 60)) % 60;
                 long hours = (elapsedTime / (1000 * 3600));
                 String timeText = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-                Platform.runLater(() -> {
-                    updateLabel(timeText);
-                });
+                Platform.runLater(() -> updateLabel(timeText));
             }
         };
         timer.scheduleAtFixedRate(timerTask, 0, 1000);
@@ -102,7 +99,7 @@ public class TimerDialog {
                     System.out.println("Invalid number of pages entered.");
                 }
             });
-            bookDetailsView.updateBookDetails();
+            bookDetailsView.updateBookDetails(selectedBook);
             closeDialog();
         }
     }
@@ -121,12 +118,11 @@ public class TimerDialog {
         int seconds = (int) ((elapsedTime / 1000) % 60);
         int minutes = (int) ((elapsedTime / (1000 * 60)) % 60);
         int hours = (int) (elapsedTime / (1000 * 3600));
-        LocalDate date = LocalDate.now();
-        Log logEntry = new Log(minutes, hours, seconds, pages, date);
+        Log logEntry = new Log(minutes, hours, seconds, pages);
 
         selectedBook.adaugaLog(logEntry);
         selectedBook.setPaginiCitite(pages);
-        bookDetailsView.updateBookDetails();
+        bookDetailsView.updateBookDetails(selectedBook);
     }
 
     public void closeDialog() {

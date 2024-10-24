@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
@@ -21,7 +22,7 @@
       <Button fx:id="backBtn" layoutX="64.0" layoutY="335.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="89.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: #7C7E73;" text="Back" textFill="WHITE" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="75.0" />
       <ProgressBar fx:id="progressBar" layoutX="76.0" layoutY="299.0" prefHeight="9.0" prefWidth="405.0" progress="0.0" style="-fx-background-color: #7C7E73;" AnchorPane.leftAnchor="76.0" AnchorPane.rightAnchor="119.0" />
       <Button fx:id="startReading" layoutX="323.0" layoutY="174.0" minWidth="40.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="71.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: #F6F4F0; -fx-border-color: #7C7E73;" />
-      <Label fx:id="pagesLabel" layoutX="327.0" layoutY="126.0" text="Pages" />
+      <Label fx:id="pagesLabel" layoutX="327.0" layoutY="126.0" text="Pages read" />
       <Button fx:id="addLogBtn" layoutX="425.0" layoutY="174.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="71.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: #F6F4F0; -fx-border-color: #7C7E73;" text="Add" />
       <Label fx:id="timeRead" layoutX="428.0" layoutY="126.0" text="Time" />
       <TableView fx:id="logTable" layoutX="75.0" layoutY="126.0" prefHeight="147.0" prefWidth="221.0" style="-fx-border-color: #7C7E73; -fx-background-color: #F6F4F0; -fx-border-width: 2;">
@@ -30,17 +31,23 @@
           <TableColumn fx:id="pageColumn" prefWidth="124.00002034505209" style="-fx-alignment: CENTER;" text="Pages read" />
         </columns>
       </TableView>
-      <Button fx:id="finishedBtn" layoutX="446.0" layoutY="247.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="78.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" text="Finished?" />
+      <Button fx:id="finishedBtn" layoutX="442.0" layoutY="245.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="78.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" text="Finished?" />
       <Label fx:id="percent" layoutX="489.0" layoutY="295.0" opacity="0.63" prefHeight="15.0" prefWidth="40.0" text="p">
          <font>
             <Font size="10.0" />
          </font>
       </Label>
-      <VBox fx:id="reviewVBox" layoutX="307.0" layoutY="126.0" prefHeight="147.0" prefWidth="221.0" visible="false">
+      <VBox fx:id="reviewVBox" layoutX="307.0" layoutY="126.0" prefHeight="147.0" prefWidth="209.0" style="-fx-background-color: #F6F4F0;" visible="false">
          <children>
-            <Label fx:id="ratingLabel" alignment="CENTER" prefHeight="32.0" prefWidth="221.0" text="rating" textAlignment="CENTER" />
-            <Label fx:id="reviewLabel" alignment="CENTER" prefHeight="106.0" prefWidth="221.0" text="review" wrapText="true" />
+            <Label fx:id="ratingLabel" alignment="CENTER" prefHeight="47.0" prefWidth="221.0" style="-fx-border-color: #7C7E73; -fx-border-width: 2;" text="rating" textAlignment="CENTER" />
+            <Label prefHeight="17.0" prefWidth="83.0" text="  Your review:" />
+            <Label fx:id="reviewLabel" prefHeight="117.0" prefWidth="221.0" style="-fx-border-color: #7C7E73; -fx-border-width: 2; -fx-padding: 2px;" text="review" wrapText="true">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin></Label>
          </children>
       </VBox>
+      <Button fx:id="editBtn" layoutX="436.0" layoutY="316.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="89.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: #7C7E73;" text="Edit" textFill="WHITE" AnchorPane.bottomAnchor="58.0" AnchorPane.rightAnchor="75.0" />
+      <Label fx:id="predictionLabel" layoutX="76.0" layoutY="96.0" text="Label" />
    </children>
 </AnchorPane>

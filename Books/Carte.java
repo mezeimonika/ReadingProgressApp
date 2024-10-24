@@ -1,6 +1,7 @@
 package Books;
 
-import java.time.LocalDate;
+import sessions.Log;
+
 import java.util.ArrayList;
 
 public class Carte
@@ -8,7 +9,7 @@ public class Carte
     private String autor;
     private String titlu;
     private String rating;
-    private ArrayList<Log> loguri;
+    private final ArrayList<Log> loguri;
     private String shelf;
     private int pagini;
     private int paginiCitite;
@@ -31,14 +32,6 @@ public class Carte
 
     public String getTitlu() {
         return titlu;
-    }
-
-    public ArrayList<Log> getLoguri() {
-        return loguri;
-    }
-
-    public void setLoguri(ArrayList<Log> loguri) {
-        this.loguri = loguri;
     }
 
     public void setAutor(String autor)
@@ -64,7 +57,9 @@ public class Carte
     public void setPaginiCitite(int paginiCitite)
     {
         if(paginiCitite!=0)
-        this.paginiCitite+=paginiCitite;
+        {
+            this.paginiCitite+=paginiCitite;
+        }
     }
 
     public int getPaginiCitite() {
@@ -102,17 +97,37 @@ public class Carte
     public ArrayList<Log> afiseazaLoguri() {
         return loguri;
     }
-    public void deleteLastLog() {
-        if (!loguri.isEmpty()) {
-            loguri.remove(loguri.size() - 1);
-        } else {
-            System.out.println("No logs to delete.");
-        }
-    }
-    public String toString() {
-        return getTitlu() + " by " + getAutor();
 
+    public String toString() {
+        String s = getTitlu() + " by " + getAutor() +"                    "+"("+getShelf()+")";
+
+        if ("Read".equals(getShelf()) && getRating() != null && !getRating().isEmpty()) {
+            s += "                    " + convertRatingToStars(getRating());
+        }
+        return s;
     }
+
+    private String convertRatingToStars(String rating) {
+        int ratingValue;
+
+        try {
+            ratingValue = Integer.parseInt(rating);
+        } catch (NumberFormatException e) {
+            ratingValue = 0;
+        }
+
+        StringBuilder stars = new StringBuilder();
+        for (int i = 0; i < 5; i++) {
+            if (i < ratingValue) {
+                stars.append("★");
+            } else {
+                stars.append("☆");
+            }
+        }
+
+        return stars.toString();
+    }
+
 
 
 }

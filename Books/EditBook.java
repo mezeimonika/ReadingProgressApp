@@ -1,5 +1,6 @@
 package Books;
-import dialogues.NewBookReview;
+
+import dialogues.EditBookReview;
 import dialogues.ReviewDialog;
 import interfaces.BookHandler;
 import interfaces.Reviewable;
@@ -14,10 +15,11 @@ import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mainpackage.Main;
+
 import java.io.IOException;
 import java.util.Objects;
 
-public class AddBook implements BookHandler {
+public class EditBook implements BookHandler {
     @FXML
     private Button addBtn1, backToLibraryButton;
     @FXML
@@ -25,56 +27,63 @@ public class AddBook implements BookHandler {
     @FXML
     ChoiceBox<String> shelfChoiceBox;
     ListaCarti listaCarti;
+    Carte selectedBook;
+    BookDetailsView bookDetailsView;
     public Main mainController;
-
-    public AddBook(ListaCarti listaCarti, Main mainController) {
+    public EditBook(ListaCarti listaCarti, Main mainController, Carte selectedBook, BookDetailsView bookDetailsView) {
         this.mainController = mainController;
         this.listaCarti=listaCarti;
+        this.selectedBook=selectedBook;
+        this.bookDetailsView=bookDetailsView;
     }
-
+    @Override
     public void bookField(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("add-book.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Books/add-book.fxml"));
         loader.setController(this);
         Parent root = loader.load();
 
         shelfChoiceBox.setItems(FXCollections.observableArrayList("Want to Read", "Currently Reading", "Read"));
-        shelfChoiceBox.getSelectionModel().selectFirst();
 
+        titleField.setText(selectedBook.getTitlu());
+        authorField.setText(selectedBook.getAutor());
+        nrPages.setText(String.valueOf(selectedBook.getPagini()));
+        shelfChoiceBox.setValue(selectedBook.getShelf());
+
+        addBtn1.setText("Save");
         addBtn1.setOnAction(e -> {
 
-            String titlu = titleField.getText();
-            String autor = authorField.getText();
-            String shelf = shelfChoiceBox.getValue();
-            String pagini = nrPages.getText();
-            if (titlu.isEmpty() || autor.isEmpty() || shelf == null || pagini.isEmpty()) {
+            String titlu_edit = titleField.getText();
+            String autor_edit = authorField.getText();
+            String shelf_edit = shelfChoiceBox.getValue();
+            String pagini_edit = nrPages.getText();
+
+
+            if (titlu_edit.isEmpty() || autor_edit.isEmpty() || shelf_edit==null || pagini_edit.isEmpty()) {
                 System.out.println("Please enter all fields.");
                 return;
             }
-            Carte carte=new Carte();
             try {
-                int nrPagini = Integer.parseInt(pagini);
-                carte.setPagini(nrPagini);
+                int nrPagini = Integer.parseInt(pagini_edit);
+                selectedBook.setPagini(nrPagini);
             } catch (NumberFormatException ex) {
                 System.out.println("Invalid number format for pages.");
                 return;
             }
+            selectedBook.setTitlu(titlu_edit);
+            selectedBook.setAutor(autor_edit);
+            selectedBook.setShelf(shelf_edit);
+            if (Objects.equals(shelf_edit, "Read")) {
+                selectedBook.setPaginiCitite(selectedBook.getPagini() - selectedBook.getPaginiCitite());
 
-
-            carte.setTitlu(titlu);
-            carte.setAutor(autor);
-            carte.setShelf(shelf);
-            if (Objects.equals(shelf, "Read")) {
-                carte.setPaginiCitite(carte.getPagini() - carte.getPaginiCitite());
-
-                Reviewable reviewHandler = new NewBookReview(this, mainController, primaryStage);
+                Reviewable reviewHandler = new EditBookReview(bookDetailsView, selectedBook);
                 try {
-                    openReviewDialog(primaryStage, carte, reviewHandler);
+                    openReviewDialog(primaryStage, selectedBook, reviewHandler);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
             }
 
-            mainController.addBookToList(carte);
+            bookDetailsView.updateBookDetails(selectedBook);
 
             titleField.clear();
             authorField.clear();
@@ -82,7 +91,7 @@ public class AddBook implements BookHandler {
             shelfChoiceBox.getSelectionModel().clearSelection();
 
             try {
-                mainController.createMainLayout(primaryStage);
+                bookDetailsView.showDetails(primaryStage);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -91,12 +100,11 @@ public class AddBook implements BookHandler {
 
         backToLibraryButton.setOnAction(e -> {
             try {
-                mainController.createMainLayout(primaryStage);
+                bookDetailsView.showDetails(primaryStage);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         });
-
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();

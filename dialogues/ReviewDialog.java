@@ -1,7 +1,9 @@
 package dialogues;
 
+import Books.AddBook;
 import Books.Carte;
 import Books.BookDetailsView;
+import interfaces.Reviewable;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
@@ -21,35 +23,28 @@ public class ReviewDialog {
     @FXML
     private ToggleGroup toggleGroup;
 
-    private Carte selectedBook;
+    private final Carte selectedBook;
     BookDetailsView bookDetailsView;
+    AddBook addBook;
     private String review;
     private String rating;
-    public ReviewDialog(Carte selectedBook, BookDetailsView bookDetailsView) {
-        this.selectedBook = selectedBook;
-        this.bookDetailsView = bookDetailsView;
-    }
-    public String getReview() {
-        return review;
-    }
+    private final Reviewable reviewHandler;
 
-    public String getRating() {
-        return rating;
+
+    public ReviewDialog(Carte selectedBook, Reviewable reviewHandler) {
+        this.selectedBook = selectedBook;
+        this.reviewHandler = reviewHandler;
     }
 
     @FXML
     public void initialize() {
+        reviewTextArea.setText(selectedBook.getReview());
         cancelButton.setOnAction(event -> closeWindow());
         submitButton.setOnAction(event -> {
+
             review = reviewTextArea.getText();
             rating = getSelectedRating();
-            selectedBook.setShelf("Read");
-            selectedBook.setReview(review);
-            selectedBook.setRating(rating);
-            selectedBook.setPaginiCitite(selectedBook.getPagini() - selectedBook.getPaginiCitite());
-            bookDetailsView.updateBookDetails();
-            bookDetailsView.updateReviewAndRating(review, rating);
-
+            reviewHandler.submitReview(selectedBook, review, rating);
             closeWindow();
         });
 
@@ -57,14 +52,14 @@ public class ReviewDialog {
     }
 
     private int getStarIndex(RadioButton radioButton) {
-        switch (radioButton.getId()) {
-            case "star1": return 1;
-            case "star2": return 2;
-            case "star3": return 3;
-            case "star4": return 4;
-            case "star5": return 5;
-            default: return 0;
-        }
+        return switch (radioButton.getId()) {
+            case "star1" -> 1;
+            case "star2" -> 2;
+            case "star3" -> 3;
+            case "star4" -> 4;
+            case "star5" -> 5;
+            default -> 0;
+        };
     }
 
     private String getSelectedRating() {

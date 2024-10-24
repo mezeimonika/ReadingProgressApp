@@ -13,10 +13,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class Main extends Application {
     @FXML
@@ -33,12 +32,10 @@ public class Main extends Application {
     private static final Carte[] allBooks = new Carte[1000];
     private static int bookCount = 0;
     AddBook addBook;
-    private Stage primaryStage;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        this.primaryStage=primaryStage;
         bookList=FXCollections.observableArrayList();
         listaCarti = new ListaCarti();
         createMainLayout(primaryStage);
@@ -56,18 +53,13 @@ public class Main extends Application {
         filterChoiceBox.setItems(FXCollections.observableArrayList( "All", "Want to Read", "Currently Reading", "Read"));
         filterChoiceBox.getSelectionModel().selectFirst();
 
-        updateListView(bookList);
-        inputSearch.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                filterBooksBySearch(newValue);
-            }
-        });
+        listView.setItems(bookList);
+        inputSearch.textProperty().addListener((observable, oldValue, newValue) -> filterBooksBySearch(newValue));
         filterBtn.setOnAction(e -> filterBooksBySearch());
 
         addBtn.setOnAction(e -> {
             try {
-                addBook.addBookField(primaryStage);
+                addBook.bookField(primaryStage);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -78,7 +70,7 @@ public class Main extends Application {
             if (selectedBook != null) {
                 Carte selectedCarte = listaCarti.findCarte(selectedBook);
                 if (selectedCarte != null) {
-                    BookDetailsView bookDetailsView = new BookDetailsView(listaCarti, selectedCarte, bookList, listView, this);
+                    BookDetailsView bookDetailsView = new BookDetailsView(listaCarti, selectedCarte, this);
                     try {
                         bookDetailsView.showDetails(primaryStage);
                     } catch (IOException e) {
@@ -89,10 +81,6 @@ public class Main extends Application {
         });
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
-    }
-
-    private void updateListView(ObservableList<String> books) {
-        listView.setItems(books);
     }
     private void filterBooksBySearch(String searchQuery) {
         String selectedShelf = filterChoiceBox.getValue();
@@ -115,7 +103,7 @@ public class Main extends Application {
                 }
             }
         }
-        updateListView(filteredList);
+        listView.setItems(filteredList);
     }
     private void filterBooksBySearch() {
         filterBooksBySearch(inputSearch.getText());
@@ -142,7 +130,7 @@ public class Main extends Application {
             bookCount++;
         }
         listaCarti.adaugaCarte(carte);
-        bookList.add(carte.toString());
+        bookList.add(Objects.requireNonNull(carte).toString());
     }
 
     public static void main(String[] args) {
