@@ -1,16 +1,19 @@
-package dialogues;
+package dialogues.reviews;
 
 import Books.BookDetailsView;
 import Books.Carte;
 import interfaces.Reviewable;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class EditBookReview implements Reviewable {
     private final BookDetailsView bookDetailsView;
-    private final Carte selectedBook;
+    private final Stage primaryStage;
 
-    public EditBookReview(BookDetailsView bookDetailsView, Carte selectedBook) {
+    public EditBookReview(BookDetailsView bookDetailsView, Stage primaryStage) {
         this.bookDetailsView = bookDetailsView;
-        this.selectedBook = selectedBook;
+        this.primaryStage = primaryStage;
     }
 
     @Override
@@ -23,5 +26,10 @@ public class EditBookReview implements Reviewable {
         bookDetailsView.updateBookDetails(selectedBook);
         bookDetailsView.updateReviewAndRating(review, rating);
         bookDetailsView.setVisibility();
+        try {
+            bookDetailsView.showDetails(primaryStage);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

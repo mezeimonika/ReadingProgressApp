@@ -1,4 +1,4 @@
-package dialogues;
+package dialogues.reviews;
 
 import Books.AddBook;
 import Books.Carte;
@@ -9,12 +9,10 @@ import mainpackage.Main;
 import java.io.IOException;
 
 public class NewBookReview implements Reviewable {
-    private final AddBook addBook;
     private final Main mainController;
     private final Stage primaryStage;
 
-    public NewBookReview(AddBook addBook, Main mainController, Stage primaryStage) {
-        this.addBook = addBook;
+    public NewBookReview(Main mainController, Stage primaryStage) {
         this.mainController = mainController;
         this.primaryStage = primaryStage;
     }

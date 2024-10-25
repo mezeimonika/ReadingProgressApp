@@ -1,10 +1,10 @@
 package Books;
-import dialogues.EditBookReview;
+import dialogues.reviews.EditBookReview;
 import interfaces.Reviewable;
 import javafx.scene.layout.VBox;
 import mainpackage.Main;
 import dialogues.AddLogDialog;
-import dialogues.ReviewDialog;
+import dialogues.reviews.ReviewDialog;
 import dialogues.TimerDialog;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -42,6 +42,7 @@ public class BookDetailsView {
     private final Main mainController;
     private final ListaCarti listaCarti;
     EditBook editBook;
+    ExtendedBook selectedBook1;
 
     public BookDetailsView(ListaCarti listaCarti, Carte selectedBook, Main mainController) {
         this.selectedBook = selectedBook;
@@ -189,38 +190,13 @@ public class BookDetailsView {
             updateReviewAndRating(selectedBook.getReview(), selectedBook.getRating());
             setVisibility();
         }
-        predictReadingTime(selectedBook);
-
+        selectedBook1 = new ExtendedBook();
+        selectedBook1.copyFrom(selectedBook);
+        String prediction = selectedBook1.predictReadingTime();
+        predictionLabel.setText(prediction);
         mainController.updateBookInList(selectedBook);
     }
-    private void predictReadingTime(Carte selectedBook) {
-        int totalPages = selectedBook.getPagini();
-        int pagesRead = selectedBook.getPaginiCitite();
-        int pagesLeft = totalPages - pagesRead;
 
-        int totalHours = 0;
-        int totalMinutes = 0;
-        int totalSeconds = 0;
-        for (Log log : selectedBook.afiseazaLoguri()) {
-            totalHours += log.getOre();
-            totalMinutes += log.getMinute();
-            totalSeconds += log.getSecunde();
-        }
-        totalMinutes += totalSeconds / 60;
-        totalSeconds = totalSeconds % 60;
-        totalHours += totalMinutes / 60;
-        totalMinutes = totalMinutes % 60;
-        if (pagesRead > 0 && (totalHours > 0 || totalMinutes > 0)) {
-            int totalTimeInMinutes = (totalHours * 60) + totalMinutes;
-            double readingSpeed = (double) pagesRead / totalTimeInMinutes;
-            int predictedTimeInMinutes = (int) Math.ceil(pagesLeft / readingSpeed);
-            int predictedHours = predictedTimeInMinutes / 60;
-            int predictedMinutes = predictedTimeInMinutes % 60;
-            predictionLabel.setText(String.format("Estimated time to finish: %dh %dm", predictedHours, predictedMinutes));
-        } else {
-            predictionLabel.setText("Not enough data to predict remaining reading time.");
-        }
-    }
 
     private void openTimerDialog(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/dialogues/timer.fxml"));
@@ -257,16 +233,16 @@ public class BookDetailsView {
 
     private void openReviewDialog(Stage primaryStage) throws IOException {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dialogues/review-dialog.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dialogues/reviews/review-dialog.fxml"));
 
-        Reviewable reviewHandler = new EditBookReview(this, selectedBook);
+        Reviewable reviewHandler = new EditBookReview(this, primaryStage);
         ReviewDialog reviewDialog=new ReviewDialog(selectedBook, reviewHandler);
         loader.setController(reviewDialog);
 
         Parent root = loader.load();
 
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/dialogues/stars.css")).toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/dialogues/reviews/stars.css")).toExternalForm());
 
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Submit Review");

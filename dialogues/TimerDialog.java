@@ -23,7 +23,6 @@ public class TimerDialog {
     private Button resetButton;
 
     private Timer timer;
-    private TimerTask timerTask;
     private long elapsedTime;
     private boolean running;
     public Carte selectedBook;
@@ -56,7 +55,7 @@ public class TimerDialog {
         running = true;
         startStopButton.setText("Pause");
         timer = new Timer();
-        timerTask = new TimerTask() {
+        TimerTask timerTask = new TimerTask() {
             private long startTime = System.currentTimeMillis();
 
             @Override
@@ -70,7 +69,7 @@ public class TimerDialog {
                 Platform.runLater(() -> updateLabel(timeText));
             }
         };
-        timer.scheduleAtFixedRate(timerTask, 0, 1000);
+        timer.scheduleAtFixedRate(timerTask, 0, 100);
     }
 
     private void pauseTimer()

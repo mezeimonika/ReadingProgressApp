@@ -1,6 +1,6 @@
 package Books;
-import dialogues.NewBookReview;
-import dialogues.ReviewDialog;
+import dialogues.reviews.NewBookReview;
+import dialogues.reviews.ReviewDialog;
 import interfaces.BookHandler;
 import interfaces.Reviewable;
 import javafx.collections.FXCollections;
@@ -66,7 +66,7 @@ public class AddBook implements BookHandler {
             if (Objects.equals(shelf, "Read")) {
                 carte.setPaginiCitite(carte.getPagini() - carte.getPaginiCitite());
 
-                Reviewable reviewHandler = new NewBookReview(this, mainController, primaryStage);
+                Reviewable reviewHandler = new NewBookReview(mainController, primaryStage);
                 try {
                     openReviewDialog(primaryStage, carte, reviewHandler);
                 } catch (IOException ex) {
@@ -103,7 +103,7 @@ public class AddBook implements BookHandler {
     }
     @Override
     public void openReviewDialog(Stage primaryStage, Carte carte, Reviewable reviewHandler) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dialogues/review-dialog.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dialogues/reviews/review-dialog.fxml"));
 
         ReviewDialog reviewDialog = new ReviewDialog(carte, reviewHandler);
         loader.setController(reviewDialog);
@@ -111,7 +111,7 @@ public class AddBook implements BookHandler {
         Parent root = loader.load();
 
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/dialogues/stars.css")).toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/dialogues/reviews/stars.css")).toExternalForm());
 
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Submit Review");

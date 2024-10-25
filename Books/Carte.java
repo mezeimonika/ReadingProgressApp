@@ -25,6 +25,12 @@ public class Carte
         paginiCitite=0;
         review="";
     }
+
+    public ArrayList<Log> getLoguri() {
+        return loguri;
+    }
+
+
     public String getAutor()
     {
         return autor;

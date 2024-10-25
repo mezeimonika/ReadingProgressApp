@@ -1,4 +1,4 @@
-package dialogues;
+package dialogues.reviews;
 
 import Books.AddBook;
 import Books.Carte;
